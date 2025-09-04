@@ -1,0 +1,47 @@
+import logging
+from sqlalchemy.orm import Session
+
+from app.db.session import Base, engine
+from app.core.config import settings
+from app.schemas.user import UserCreate
+from app.crud.crud_user import user
+
+# Import all models to ensure they are registered with SQLAlchemy
+from app.models.user import User
+from app.models.ticket import Ticket, TicketStatus, TicketPriority
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def init_db(db: Session) -> None:
+    # Create tables
+    Base.metadata.create_all(bind=engine)
+    
+    # Create initial superuser if it doesn't exist
+    superuser = user.get_by_email(db, email="admin@example.com")
+    if not superuser:
+        user_in = UserCreate(
+            email="admin@example.com",
+            username="admin",
+            password="admin",  # Change this in production!
+            is_superuser=True,
+            full_name="Initial Admin",
+        )
+        superuser = user.create(db, obj_in=user_in)
+        logger.info(f"Superuser created: {superuser.email}")
+    else:
+        logger.info(f"Superuser already exists: {superuser.email}")
+
+
+def main() -> None:
+    from app.db.session import SessionLocal
+    
+    logger.info("Creating initial data")
+    db = SessionLocal()
+    init_db(db)
+    logger.info("Initial data created")
+
+
+if __name__ == "__main__":
+    main()
