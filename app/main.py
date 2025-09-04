@@ -12,7 +12,7 @@ app = FastAPI(
     description=settings.PROJECT_DESCRIPTION,
     version=settings.VERSION,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    docs_url="/docs",
+    docs_url=None,
     redoc_url=None,
 )
 
