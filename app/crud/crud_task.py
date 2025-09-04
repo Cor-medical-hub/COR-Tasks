@@ -66,7 +66,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         task = self.get(db, id=task_id)
         if not task:
             return None
-        task.status = TaskStatus.COMPLETED
+        task.status = TaskStatus.DONE
         task.completed_at = datetime.now()
         db.add(task)
         db.commit()

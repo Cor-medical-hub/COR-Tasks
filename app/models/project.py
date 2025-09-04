@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, func
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime, func
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 
@@ -9,6 +9,7 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False, index=True)
     description = Column(Text, nullable=True)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Relationships
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
