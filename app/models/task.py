@@ -27,10 +27,12 @@ class Task(Base):
 
     # Связь с пользователем (исполнитель)
     assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    assigned_to = relationship("User", backref="tasks")
+    assigned_to = relationship("User", back_populates="tasks")
 
     # Таймштампы
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     due_date = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
+
+    comments = relationship("Comment", back_populates="task", cascade="all, delete-orphan")

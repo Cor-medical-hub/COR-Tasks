@@ -9,7 +9,9 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False, index=True)
     description = Column(Text, nullable=True)
+
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_by = relationship("User", back_populates="projects")
 
     # Relationships
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
