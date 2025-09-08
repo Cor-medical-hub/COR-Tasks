@@ -15,8 +15,10 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    avatar_url = Column(String(255), nullable=True)
 
     # Связи
     tasks = relationship("Task", back_populates="assigned_to", cascade="all, delete-orphan")
     projects = relationship("Project", back_populates="created_by", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+    projects_member = relationship("ProjectMember", back_populates="user")

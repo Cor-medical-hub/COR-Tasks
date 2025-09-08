@@ -12,7 +12,7 @@ from app.models.project import Project
 from app.models.task import Task
 from app.models.ticket import Ticket, TicketStatus, TicketPriority
 from app.models.comment import Comment
-
+from app.models.project_member import ProjectMember, ProjectRole
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
