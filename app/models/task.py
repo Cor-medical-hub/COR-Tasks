@@ -13,6 +13,13 @@ class TaskStatus(str, enum.Enum):
     BLOCKED = "blocked"
 
 
+class TaskPriority(str, enum.Enum):
+    URGENT = "urgent"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
 task_assignees = Table(
     "task_assignees",
     Base.metadata,
@@ -29,6 +36,7 @@ class Task(Base):
     title = Column(String, nullable=False, index=True)
     description = Column(Text, nullable=True)
     status = Column(Enum(TaskStatus), default=TaskStatus.TODO, nullable=False)
+    priority = Column(Enum(TaskPriority), default=TaskPriority.MEDIUM, nullable=False)
 
     # Связь с проектом
     project_id = Column(Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True)

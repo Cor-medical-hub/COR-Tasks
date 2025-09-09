@@ -17,6 +17,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
             title=obj_in.title,
             description=obj_in.description,
             status=obj_in.status,
+            priority=obj_in.priority,
             due_date=obj_in.due_date,
             project_id=obj_in.project_id,
             created_by_id=created_by_id,
