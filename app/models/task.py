@@ -60,6 +60,7 @@ class Task(Base):
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     comments = relationship("Comment", back_populates="task", cascade="all, delete-orphan")
+    subtasks = relationship("Subtask", back_populates="task", cascade="all, delete-orphan")
 
     @property
     def assignee_ids(self) -> list[int]:
