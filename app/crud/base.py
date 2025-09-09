@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.db.session import Base as db_session_base
+from app.models.user import User
 
 ModelType = TypeVar("ModelType", bound=db_session_base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -52,9 +53,20 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
+
+        # Обновляем обычные поля
         for field in obj_data:
-            if field in update_data:
+            if field in update_data and field != "assignee_ids":
                 setattr(db_obj, field, update_data[field])
+
+        # Обновляем Many-to-Many assignees
+        if "assignee_ids" in update_data:
+            if update_data["assignee_ids"] is not None:
+                users = db.query(User).filter(User.id.in_(update_data["assignee_ids"])).all()
+                db_obj.assignees = users
+            else:
+                db_obj.assignees = []
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

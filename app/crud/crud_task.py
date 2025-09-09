@@ -4,8 +4,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
+from app.core.errors import NotFoundError
 from app.crud.base import CRUDBase
 from app.models.task import Task, TaskStatus
+from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate
 
 
@@ -18,8 +20,12 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
             due_date=obj_in.due_date,
             project_id=obj_in.project_id,
             created_by_id=created_by_id,
-            assigned_to_id=obj_in.assigned_to_id,
         )
+        if obj_in.assignee_ids:
+            users = db.query(User).filter(User.id.in_(obj_in.assignee_ids)).all()
+            if not users:
+                raise NotFoundError(detail="Assigned users not found")
+            db_obj.assignees = users
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -34,10 +40,13 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
             .all()
         )
 
-    def get_multi_by_assignee(self, db: Session, *, assigned_to_id: int, skip: int = 0, limit: int = 100) -> List[Task]:
+    def get_multi_by_assignee(
+        self, db: Session, *, user_id: int, skip: int = 0, limit: int = 100
+    ) -> List[Task]:
         return (
             db.query(self.model)
-            .filter(Task.assigned_to_id == assigned_to_id)
+            .join(Task.assignees)  
+            .filter(User.id == user_id)
             .offset(skip)
             .limit(limit)
             .all()

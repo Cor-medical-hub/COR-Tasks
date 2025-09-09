@@ -11,7 +11,7 @@ class CRUDComment(CRUDBase[Comment, CommentCreate, CommentUpdate]):
             content=obj_in.content,
             ticket_id=obj_in.ticket_id,
             task_id=obj_in.task_id,
-            created_by_id=created_by_id,
+            user_id=created_by_id,
         )
         db.add(db_obj)
         db.commit()

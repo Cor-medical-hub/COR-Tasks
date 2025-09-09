@@ -38,10 +38,10 @@ async def create_task(
     current_user: User = get_current_active_user_dep,
 ) -> Any:
     """Create new task."""
-    if task_in.assigned_to_id:
-        assigned_user = user.get(db, id=task_in.assigned_to_id)
-        if not assigned_user:
-            raise NotFoundError(detail="Assigned user not found")
+    if task_in.assignee_ids:
+        users = db.query(User).filter(User.id.in_(task_in.assignee_ids)).all()
+        if not users or len(users) != len(task_in.assignee_ids):
+            raise NotFoundError(detail="One or more assigned users not found")
 
     return task.create_with_owner(db, obj_in=task_in, created_by_id=current_user.id)
 
@@ -66,8 +66,8 @@ async def read_assigned_tasks(
     limit: int = 100,
     current_user: User = get_current_active_user_dep,
 ) -> Any:
-    """Get tasks assigned to current user."""
-    return task.get_multi_by_assignee(db, assigned_to_id=current_user.id, skip=skip, limit=limit)
+    """Get tasks assigned to current user (Many-to-Many)."""
+    return task.get_multi_by_assignee(db, user_id=current_user.id, skip=skip, limit=limit)
 
 
 @router.get("/search", response_model=List[TaskSchema])
@@ -96,9 +96,11 @@ async def update_task(
     if not task_obj:
         raise NotFoundError(detail="Task not found")
 
-    if not (task_obj.created_by_id == current_user.id or
-            task_obj.assigned_to_id == current_user.id or
-            current_user.is_superuser):
+    if not (
+        task_obj.created_by_id == current_user.id or
+        current_user in task_obj.assignees or
+        current_user.is_superuser
+    ):
         raise ForbiddenError(detail="Not enough permissions")
 
     return task.update(db, db_obj=task_obj, obj_in=task_in)
@@ -116,7 +118,11 @@ async def delete_task(
     if not task_obj:
         raise NotFoundError(detail="Task not found")
 
-    if not (task_obj.created_by_id == current_user.id or current_user.is_superuser):
+    if not (
+        task_obj.created_by_id == current_user.id or
+        current_user in task_obj.assignees or
+        current_user.is_superuser
+    ):
         raise ForbiddenError(detail="Not enough permissions")
 
     return task.remove(db, id=task_id)
@@ -134,9 +140,11 @@ async def complete_task(
     if not task_obj:
         raise NotFoundError(detail="Task not found")
 
-    if not (task_obj.created_by_id == current_user.id or
-            task_obj.assigned_to_id == current_user.id or
-            current_user.is_superuser):
+    if not (
+        task_obj.created_by_id == current_user.id or
+        current_user in task_obj.assignees or
+        current_user.is_superuser
+    ):
         raise ForbiddenError(detail="Not enough permissions")
 
     return task.complete_task(db, task_id=task_id)

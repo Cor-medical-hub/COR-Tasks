@@ -62,7 +62,7 @@ async def update_comment(
     if not comment_obj:
         raise NotFoundError(detail="Comment not found")
 
-    if not (comment_obj.created_by_id == current_user.id or current_user.is_superuser):
+    if not (comment_obj.user_id == current_user.id or current_user.is_superuser):
         raise ForbiddenError(detail="Not enough permissions")
 
     return comment.update(db, db_obj=comment_obj, obj_in=comment_in)
@@ -80,7 +80,7 @@ async def delete_comment(
     if not comment_obj:
         raise NotFoundError(detail="Comment not found")
 
-    if not (comment_obj.created_by_id == current_user.id or current_user.is_superuser):
+    if not (comment_obj.user_id == current_user.id or current_user.is_superuser):
         raise ForbiddenError(detail="Not enough permissions")
 
     return comment.remove(db, id=comment_id)

@@ -9,7 +9,7 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     status: Optional[TaskStatus] = TaskStatus.TODO
     project_id: Optional[int] = None
-    assigned_to_id: Optional[int] = None
+    assignee_ids: list[int] = None
     due_date: Optional[datetime] = None
 
 
@@ -22,7 +22,7 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     project_id: Optional[int] = None
-    assigned_to_id: Optional[int] = None
+    assignee_ids: Optional[List[int]] = None
     due_date: Optional[datetime] = None
 
 

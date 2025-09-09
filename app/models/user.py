@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.session import Base
+from app.models.task import task_assignees
 
 
 class User(Base):
@@ -18,7 +19,12 @@ class User(Base):
     avatar_url = Column(String(255), nullable=True)
 
     # Связи
-    tasks = relationship("Task", back_populates="assigned_to", cascade="all, delete-orphan")
+    created_tasks = relationship("Task", foreign_keys="Task.created_by_id", back_populates="created_by")
+    assigned_tasks = relationship(
+        "Task",
+        secondary=task_assignees,
+        back_populates="assignees",
+    )
     projects = relationship("Project", back_populates="created_by", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
     projects_member = relationship("ProjectMember", back_populates="user")

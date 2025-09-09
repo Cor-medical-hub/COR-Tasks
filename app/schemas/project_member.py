@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from app.models.project_member import ProjectRole
 
 
@@ -10,9 +10,11 @@ class ProjectMemberBase(BaseModel):
     role_in_project: ProjectRole = ProjectRole.VIEWER
 
 
+
 # Create
 class ProjectMemberCreate(ProjectMemberBase):
     project_id: int
+
 
 
 # Update
@@ -27,7 +29,7 @@ class ProjectMemberInDBBase(ProjectMemberBase):
     joined_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # For response

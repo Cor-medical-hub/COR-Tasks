@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Table, Text, DateTime, ForeignKey, Enum
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 import enum
@@ -11,6 +11,15 @@ class TaskStatus(str, enum.Enum):
     IN_PROGRESS = "in_progress"
     DONE = "done"
     BLOCKED = "blocked"
+
+
+task_assignees = Table(
+    "task_assignees",
+    Base.metadata,
+    Column("task_id", Integer, ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+)
+
 
 
 class Task(Base):
@@ -26,8 +35,15 @@ class Task(Base):
     project = relationship("Project", back_populates="tasks")
 
     # Связь с пользователем (исполнитель)
-    assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    assigned_to = relationship("User", back_populates="tasks")
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    created_by = relationship("User", foreign_keys=[created_by_id], back_populates="created_tasks")
+
+    assignees = relationship(
+        "User",
+        secondary=task_assignees,
+        back_populates="assigned_tasks",
+    )
 
     # Таймштампы
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -36,3 +52,7 @@ class Task(Base):
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     comments = relationship("Comment", back_populates="task", cascade="all, delete-orphan")
+
+    @property
+    def assignee_ids(self) -> list[int]:
+        return [user.id for user in self.assignees]
