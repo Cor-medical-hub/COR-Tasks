@@ -15,6 +15,10 @@ from app.models.comment import Comment
 from app.models.project_member import ProjectMember, ProjectRole
 from app.models.subtask import Subtask
 
+from app.models.activity import Activity, ActivityType
+from app.models.attachment import Attachment
+from app.models.time_log import TimeLog
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
