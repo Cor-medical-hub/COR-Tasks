@@ -25,6 +25,11 @@ class User(Base):
         secondary=task_assignees,
         back_populates="assignees",
     )
+    assigned_subtasks = relationship(
+        "Subtask",
+        secondary="subtask_assignees",
+        back_populates="assignees",
+    )
     projects = relationship("Project", back_populates="created_by", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
     projects_member = relationship("ProjectMember", back_populates="user")
