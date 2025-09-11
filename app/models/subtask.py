@@ -45,3 +45,7 @@ class Subtask(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    activities = relationship("Activity", back_populates="subtask", cascade="all, delete-orphan")
+    attachments = relationship("Attachment", back_populates="subtask", cascade="all, delete-orphan")
+    time_logs = relationship("TimeLog", back_populates="subtask", cascade="all, delete-orphan")

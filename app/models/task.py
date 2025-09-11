@@ -62,6 +62,10 @@ class Task(Base):
     comments = relationship("Comment", back_populates="task", cascade="all, delete-orphan")
     subtasks = relationship("Subtask", back_populates="task", cascade="all, delete-orphan")
 
+    activities = relationship("Activity", back_populates="task", cascade="all, delete-orphan")
+    attachments = relationship("Attachment", back_populates="task", cascade="all, delete-orphan")
+    time_logs = relationship("TimeLog", back_populates="task", cascade="all, delete-orphan")
+
     @property
     def assignee_ids(self) -> list[int]:
         return [user.id for user in self.assignees]

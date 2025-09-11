@@ -8,7 +8,8 @@ from app.models.project import Project
 
 from app.models.project_member import ProjectMember, ProjectRole
 from app.schemas.project import ProjectCreate, ProjectUpdate
-
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 
 class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):

@@ -7,7 +7,8 @@ from sqlalchemy import or_, and_
 from app.crud.base import CRUDBase
 from app.models.ticket import Ticket, TicketStatus
 from app.schemas.ticket import TicketCreate, TicketUpdate
-
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 class CRUDTicket(CRUDBase[Ticket, TicketCreate, TicketUpdate]):
     def create_with_owner(self, db: Session, *, obj_in: TicketCreate, created_by_id: int) -> Ticket:

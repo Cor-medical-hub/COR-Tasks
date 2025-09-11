@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.comment import Comment
 from app.schemas.comment import CommentCreate, CommentUpdate
-
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 class CRUDComment(CRUDBase[Comment, CommentCreate, CommentUpdate]):
     def create_with_owner(self, db: Session, *, obj_in: CommentCreate, created_by_id: int) -> Comment:
@@ -16,6 +17,13 @@ class CRUDComment(CRUDBase[Comment, CommentCreate, CommentUpdate]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        activity.log(
+            db,
+            user_id=created_by_id,
+            action_type=ActivityType.CREATED,
+            task_id=obj_in.task_id,
+            new_value={"content": obj_in.content},
+        )
         return db_obj
 
     def get_multi_by_ticket(self, db: Session, *, ticket_id: int, skip: int = 0, limit: int = 100) -> List[Comment]:

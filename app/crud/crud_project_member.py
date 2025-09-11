@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.project_member import ProjectMember, ProjectRole
 from app.schemas.project_member import ProjectMemberCreate, ProjectMemberUpdate
-
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 
 class CRUDProjectMember(CRUDBase[ProjectMember, ProjectMemberCreate, ProjectMemberUpdate]):
