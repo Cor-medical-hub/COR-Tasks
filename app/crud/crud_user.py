@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from app.core.security import get_password_hash, verify_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
-
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 class CRUDUser:
     def get(self, db: Session, id: int) -> Optional[User]:

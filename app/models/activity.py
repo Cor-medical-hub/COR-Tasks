@@ -1,7 +1,7 @@
 from datetime import datetime
 import enum
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import Column, Integer, String, Table, Text, DateTime, ForeignKey, Enum
+from sqlalchemy import JSON, Column, Integer, String, Table, Text, DateTime, ForeignKey, Enum
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.session import Base
@@ -29,8 +29,8 @@ class Activity(Base):
     user = relationship("User")
 
     action_type = Column(Enum(ActivityType), nullable=False)
-    old_value = Column(JSONB, nullable=True)
-    new_value = Column(JSONB, nullable=True)
+    old_value = Column(JSON, nullable=True)
+    new_value = Column(JSON, nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 

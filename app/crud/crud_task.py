@@ -9,6 +9,8 @@ from app.crud.base import CRUDBase
 from app.models.task import Task, TaskStatus
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate
+from app.crud.crud_activity import activity
+from app.models.activity import ActivityType
 
 
 class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
@@ -30,6 +32,13 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        activity.log(
+            db,
+            user_id=created_by_id,
+            action_type=ActivityType.CREATED,
+            task_id=db_obj.id,
+            new_value={"title": db_obj.title, "description": db_obj.description},
+        )
         return db_obj
 
     def get_multi_by_project(self, db: Session, *, project_id: int, skip: int = 0, limit: int = 100) -> List[Task]:
@@ -81,6 +90,13 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         db.add(task)
         db.commit()
         db.refresh(task)
+        activity.log(
+            db,
+            user_id=task.created_by_id,
+            action_type=ActivityType.STATUS_CHANGED,
+            task_id=task.id,
+            new_value={"title": task.title, "description": task.description},
+        )
         return task
 
 
